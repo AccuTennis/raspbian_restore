@@ -3,7 +3,7 @@
 #
 # update accutennis disk image v3 to v4. 
 # inspired by https://github.com/mrpjevans/raspbian_restore/blob/master/create_raspbian_restore
-# before running this script, upload tenniscam_boot_v4.tar.gz and tenniscam_main_v4.gz to /home/pi/tenniscam/recovery_images
+# before running this script, upload tenniscam_main_v4.gz to /home/pi/recovery_images
 
 
 # You need to be root to do this
@@ -76,18 +76,18 @@ fi
 
 #image files
 tenniscam_main_v4=/home/pi/recovery_images/tenniscam_main_v4.gz
-tenniscam_boot_v4=/home/pi/recovery_images/tenniscam_boot_v4.tar.gz
+tenniscam_boot_v4=/mnt/p3/home/pi/recovery_images/tenniscam_boot_v4.tar.gz
 if [[ ! -f "$tenniscam_main_v4" ]]
 then
     echo "Missing file $tenniscam_main_v4.  Exiting."
     exit
 fi
 
-if [[ ! -f "$tenniscam_boot_v4" ]]
-then
-    echo "Missing file $tenniscam_boot_v4. Exiting."
-    exit
-fi
+#if [[ ! -f "$tenniscam_boot_v4" ]]
+#then
+#   echo "Missing file $tenniscam_boot_v4. Exiting."
+#   exit
+#fi
 
 #create mount point
 mkdir -p /mnt/p3
@@ -130,7 +130,7 @@ EOF
 if [[ "$1" == "" ]]
     then
     echo "Updating bootloader files in /boot"
-    sudo tar -xvzf $tenniscam_boot_v4 -C /
+    sudo tar -xzf $tenniscam_boot_v4 -C /
 fi
 
 #point bootloader to the new partition
@@ -141,6 +141,9 @@ sed -i "s/root=PARTUUID=[^[:space:]]*/root=PARTUUID=${diskUUID}-03/" /boot/cmdli
 echo "Synching ip address between partitions."
 ipAddr=$(grep "^static ip_address=" /etc/dhcpcd.conf)
 sed -i "s|^static ip_address=.*|${ipAddr}|" /mnt/p3/etc/dhcpcd.conf
+
+#copy over any internal calibration files
+[[ -e /home/pi/tenniscam/calibration ]] && cp -r /home/pi/calibration /mnt/p3/home/pi/tenniscam/
 
 echo "Done.  Reboot to run on partition 3."
 
