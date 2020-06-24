@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #
 # update accutennis disk image v3 to v4. 
 # inspired by https://github.com/mrpjevans/raspbian_restore/blob/master/create_raspbian_restore
@@ -143,7 +142,7 @@ ipAddr=$(grep "^static ip_address=" /etc/dhcpcd.conf)
 sed -i "s|^static ip_address=.*|${ipAddr}|" /mnt/p3/etc/dhcpcd.conf
 
 #copy over any internal calibration files
-[[ -e /home/pi/tenniscam/calibration ]] && cp -r /home/pi/calibration /mnt/p3/home/pi/tenniscam/
+[[ -e /home/pi/tenniscam/calibration ]] && cp -r /home/pi/tenniscam/calibration /mnt/p3/home/pi/tenniscam/
 
 echo "Done.  Reboot to run on partition 3."
 
